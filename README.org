@@ -1,0 +1,61 @@
+* Dust
+  Pattern matching for destructured values.
+  Powered by [[https://clojure.org/guides/spec][spec]] and [[https://github.com/clojure/core.match][core.match]].
+
+** Getting Started
+   Declare your dependencies in a [[https://clojure.org/guides/deps_and_cli][deps.edn]] file.
+   #+BEGIN_SRC clojure
+{:deps {conjunctive/dust {:git/url "https://github.com/conjunctive/dust"
+                          :sha "04d2744549214b5cba04002b6875bdf59f9d88b6"}}}
+   #+END_SRC
+
+   Start a Clojure REPL.
+   #+BEGIN_SRC sh
+$ clj
+   #+END_SRC
+
+   Require [[https://clojure.org/guides/spec][spec]].
+   #+BEGIN_SRC clojure
+(require '[clojure.spec.alpha :as s])
+   #+END_SRC
+
+   Require the pattern matching macros.
+   #+BEGIN_SRC clojure
+(require '[dust.core :as dust])
+   #+END_SRC
+
+   Define a spec of a sum type.
+   #+BEGIN_SRC clojure
+(s/def ::sum (s/or :k keyword? :s string? :n number?))
+   #+END_SRC
+
+   Match against the conformed data.
+   #+BEGIN_SRC clojure
+(dust/spec "data"
+  ::sum
+  [:k key] (symbol key)
+  [:s str] (seq str)
+  [:n num] (inc num))
+;; => (\d \a \t \a)
+   #+END_SRC
+
+   Throw an exception when a case is missing at compile time.
+   #+BEGIN_SRC clojure
+(dust/sum "Uh-oh"
+  ::sum
+  [:k key] (symbol key)
+  [:n num] (inc num))
+   #+END_SRC
+
+   Short-circuit on invalid data.
+   #+BEGIN_SRC clojure
+(dust/sum {:x :y}
+  ::sum
+  [:k key] (symbol key)
+  [:s str] (seq str)
+  [:n num] (inc num))
+;; => :clojure.spec.alpha/invalid
+   #+END_SRC
+
+** License
+   This project is licensed under the MIT License.
