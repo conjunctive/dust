@@ -5,7 +5,11 @@
             [clojure.set :as set]
             [dust.core :as dust]))
 
-;; Recursive sum type specs
+;; Sum type spec
+(s/def ::name-or-id
+  (s/or :name string? :id int?))
+
+;; Recursive sum type spec
 (s/def ::sum (constantly false))
 (s/def ::a int?)
 (s/def ::b float?)
@@ -18,6 +22,54 @@
         :b ::b
         :c ::c
         :d ::d))
+
+(deftest match
+  (testing "Pattern matching on spec output"
+
+    (testing "With sum type"
+      (letfn [(name-or-id [x]
+                (m/match (s/conform ::name-or-id x)
+                  [:name s] s
+                  [:id n] n
+                  :else nil))]
+        (is (= "abc" (name-or-id "abc")))
+        (is (= 123 (name-or-id 123)))))
+
+    (testing "With recursive sum type"
+      (is (= 23
+             (m/match (s/conform ::sum 23)
+               [:a a] a
+               :else nil)))
+
+      (is (= 23.5
+             (m/match (s/conform ::sum 23.5)
+               [:a a] a
+               [:b b] b
+               [:c c] c
+               [:d d] d)))
+
+      (is (= 2.5
+             (m/match (s/conform ::sum [23 23.5 {:a 1 :b 1.5 :c [2 2.5]}])
+               [:c [[:a 23]
+                    [:b 23.5]
+                    [:d {:a 1
+                         :b 1.5
+                         :c [[:a 2]
+                             [:b c->d->c->b]]}]]]
+               c->d->c->b
+               :else nil)))
+
+      (is (= 7.0
+             (m/match (s/conform ::sum {:a 1 :b 1.5 :c [2 2.5]})
+               [:d {:a d->a
+                    :b d->b
+                    :c [[:a d->c->a]
+                        [:b d->c->b]]}]
+               (+ d->a
+                  d->b
+                  d->c->a
+                  d->c->b)
+               :else nil))))))
 
 (deftest core
   (testing "Pattern matching on spec output"

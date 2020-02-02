@@ -2,8 +2,7 @@
   "Exhaustiveness checking for spec"
   (:require [clojure.set :as set]
             [clojure.spec.alpha :as s]
-            [net.cgrand.xforms :as x]
-            [dust.match]))
+            [net.cgrand.xforms :as x]))
 
 (s/def ::sum
   (s/cat :or #{'or}

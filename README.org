@@ -47,6 +47,16 @@ $ clj
   [:n num] (inc num))
    #+END_SRC
 
+   Throw an exception when a case is missing at runtime.
+   #+BEGIN_SRC clojure
+(try (dust/rune "Uh-oh"
+       ::sum
+       [:k key] (symbol key)
+       [:n num] (inc num))
+     (catch Exception e
+       (dust.spec/explain (ex-data e))))
+   #+END_SRC
+
    Short-circuit on invalid data.
    #+BEGIN_SRC clojure
 (dust/sum {:x :y}
