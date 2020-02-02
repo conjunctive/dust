@@ -6,7 +6,7 @@
    Declare your dependencies in a [[https://clojure.org/guides/deps_and_cli][deps.edn]] file.
    #+BEGIN_SRC clojure
 {:deps {conjunctive/dust {:git/url "https://github.com/conjunctive/dust"
-                          :sha "8ce0577136c781e2ba2487c6b3def0d76fc6e446"}}}
+                          :sha "d9eb81beac4c5daea81cb4865522374586310d3d"}}}
    #+END_SRC
 
    Start a Clojure REPL.
